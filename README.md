@@ -1,5 +1,6 @@
-# cacic2019-handshapes
-Experiments for the article "Handshape Recognition for Small Dataset" 
+# Handshape Datasets
+
+Fork of [cacic2019-hanshapes](https://github.com/midusi/cacic2019-handshapes) for continue working on handshape recognition.
 
 ## Content
 
