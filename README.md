@@ -1,4 +1,4 @@
-# Handshape Datasets
+# Handshape Recognition
 
 Fork of [cacic2019-hanshapes](https://github.com/midusi/cacic2019-handshapes) to continue working on handshape recognition.
 
