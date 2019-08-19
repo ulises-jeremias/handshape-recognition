@@ -132,8 +132,6 @@ for dataset in ['ciarp', 'lsa16', 'rwth']:
                                                     'model.nb_filters': nb_filters,
 
                                                     'train.lr': lr,
-                                                    'train.epochs': 1,
-                                                    'data.episodes': 20
                                                 }
 
                                                 now = datetime.now()
@@ -147,7 +145,7 @@ for dataset in ['ciarp', 'lsa16', 'rwth']:
                                                 losses = []
                                                 accuracies = []
 
-                                                for i in range(1):
+                                                for i in range(10):
                                                     loss, acc = eval_protonet(preprocessed_config)
                                                     print("Evalutation #{} finished".format(i))
                                                     losses.append(loss)
