@@ -1,6 +1,11 @@
+import os
+import time
 import configparser
+import numpy as np
+from datetime import datetime
 
-from train_setup import train
+from src.proto_net.scripts.train.train_setup import train as train_protonet
+from src.proto_net.scripts.eval.eval_setup import eval as eval_protonet
 
 configs = {
     'lsa16': {
@@ -82,6 +87,13 @@ def preprocess_config(c):
             conf_dict[param] = c[param]
     return conf_dict
 
+eval_summary_file = f"results/eval_summary.csv"
+
+# create summary file if not exists
+if not os.path.exists(eval_summary_file):
+    file = open(eval_summary_file, 'w')
+    file.write("datetime, model, config, min_loss, min_loss_accuracy\n")
+    file.close()
 
 for dataset in ['ciarp', 'lsa16', 'rwth']:
     config_from_file = configparser.ConfigParser()
@@ -119,10 +131,40 @@ for dataset in ['ciarp', 'lsa16', 'rwth']:
                                                     'model.nb_layers': nb_layers,
                                                     'model.nb_filters': nb_filters,
 
-                                                    'train.lr': lr
+                                                    'train.lr': lr,
+                                                    'train.epochs': 1,
+                                                    'data.episodes': 20
                                                 }
 
+                                                now = datetime.now()
+                                                now_as_str = now.strftime('%Y_%m_%d-%H:%M:%S')
+
                                                 preprocessed_config = preprocess_config({ **config_from_file['TRAIN'], **custom_params })
-                                                train(preprocessed_config)
-                                            except:
-                                                print("Error. Probably memory :c")
+                                                train_protonet(preprocessed_config)
+
+                                                preprocessed_config['data.episodes'] = 1000
+
+                                                losses = []
+                                                accuracies = []
+
+                                                for i in range(1):
+                                                    loss, acc = eval_protonet(preprocessed_config)
+                                                    print("Evalutation #{} finished".format(i))
+                                                    losses.append(loss)
+                                                    accuracies.append(acc)
+
+                                                loss_avg = np.average(losses)
+                                                acc_avg = np.average(accuracies)
+
+                                                print("loss: {}, accuracy: {}".format(loss_avg, acc_avg))
+
+                                                file = open(eval_summary_file, 'a+') 
+                                                summary = "{}, {}, proto-net, {}, {}, {}\n".format(now_as_str,
+                                                                                                   preprocessed_config['data.dataset'],
+                                                                                                   preprocessed_config['model.save_path'],
+                                                                                                   loss_avg,
+                                                                                                   acc_avg)
+                                                file.write(summary)
+                                            except Exception as e:
+                                                print(e)
+

@@ -18,16 +18,9 @@ variables["--config"]="config"
 
 . ./scripts/flags/arguments.sh
 
-mode=${mode:-"train"}
+mode=${mode:-"traineval"}
 config=${config:-"lsa16"}
 
 echo "Running $mode mode with $config configuration file"
 
-all=""
-
-if has_param '--all' "$@"
-then
-    all="_all"
-fi
-
-python src/proto_net/scripts/$mode/run_$mode$all.py --config src/proto_net/config/config_$config.conf
+python src/proto_net/scripts/$mode/run_$mode.py --config src/proto_net/config/config_$config.conf

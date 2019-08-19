@@ -244,14 +244,17 @@ def train(config):
 
     file = open(summary_file, 'a+') 
     summary = "{}, {}, proto-net, {}, {}, {}\n".format(now_as_str,
-                                                     config['data.dataset'],
-                                                     config_file,
-                                                     min_loss[0],
-                                                     min_loss_acc[0])
+                                                       config['data.dataset'],
+                                                       config_file,
+                                                       min_loss[0],
+                                                       min_loss_acc[0])
     file.write(summary)
 
     elapsed = time_end - time_start
     h, min = elapsed//3600, elapsed%3600//60
     sec = elapsed-min*60
+
+    config['config.path'] = config_file,
+    config['model.save_path'] = model_file
 
     print(f"Training took: {h} h {min} min {sec} sec")

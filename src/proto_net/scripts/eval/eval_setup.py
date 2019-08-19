@@ -52,6 +52,8 @@ def eval(config):
     print("Loss: ", test_loss.result().numpy())
     print("Accuracy: ", test_acc.result().numpy())
 
+    return test_loss.result().numpy(), test_acc.result().numpy()
+
 
 if __name__ == "__main__":
     pass
