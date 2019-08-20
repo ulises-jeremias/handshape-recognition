@@ -145,8 +145,8 @@ for dataset in ['rwth', 'lsa16', 'ciarp']:
 
                                                 preprocessed_config = {
                                                     **preprocessed_config,
-                                                    'data.crop': True,
-                                                    'data.use_cropped': True,
+                                                    'data.crop': False,
+                                                    'data.use_cropped': False,
                                                     'data.episodes': 1000,
                                                 }
 
