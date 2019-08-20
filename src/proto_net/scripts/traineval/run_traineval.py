@@ -143,7 +143,12 @@ for dataset in ['rwth', 'lsa16', 'ciarp']:
                                                 preprocessed_config = preprocess_config({ **config_from_file['TRAIN'], **custom_params })
                                                 train_protonet(preprocessed_config)
 
-                                                preprocessed_config['data.episodes'] = 1000
+                                                preprocessed_config = {
+                                                    **preprocessed_config,
+                                                    'data.crop': True,
+                                                    'data.use_cropped': True,
+                                                    'data.episodes': 1000,
+                                                }
 
                                                 losses = []
                                                 accuracies = []
