@@ -126,16 +126,15 @@ for dataset in ['rwth', 'lsa16', 'ciarp']:
                                                     'data.width_shift_range': width_shift_range,
                                                     'data.height_shift_range': height_shift_range,
                                                     'data.horizontal_flip': horizontal_flip, 
+                                                    
+                                                    'data.crop': True,
+                                                    'data.use_cropped': True,
 
                                                     'model.type': model_type,
                                                     'model.nb_layers': nb_layers,
                                                     'model.nb_filters': nb_filters,
 
                                                     'train.lr': lr,
-                                                    'data.crop': True,
-                                                    'data.use_cropped': True,
-                                                    'train.epochs': 1,
-                                                    'model.x_dim': '64,64,3',
                                                 }
 
                                                 now = datetime.now()

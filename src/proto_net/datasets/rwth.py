@@ -68,9 +68,11 @@ def load_rwth(data_dir, config, splits):
 
     if config['data.crop']:
         print('cropping')
-        cropper = Cropper(confidence=0.9, model_dir="src/hand_cropper/models/saved_model.pb")
+        config['model.x_dim'] = '64,64,3'
+        if '_cropper' in config and config['_cropper'] is None:
+            config['_cropper'] = Cropper(confidence=0.9, model_dir="src/hand_cropper/models/saved_model.pb")
         print('Cropper created')
-        features, classes = cropper.crop_dataset(features, classes, size=(64, 64), use_cropped=config['data.use_cropped'], good_min=good_min)
+        features, classes = config['_cropper'].crop_dataset(features, classes, size=(64, 64), use_cropped=config['data.use_cropped'], good_min=good_min, dataset_name=config['data.dataset'])
         print('dataset cropped')
 
     uniqueClasses = np.unique(classes)
