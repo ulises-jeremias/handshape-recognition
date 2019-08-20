@@ -146,7 +146,12 @@ for dataset in ['rwth']:
                                                 preprocessed_config = preprocess_config({ **config_from_file['TRAIN'], **custom_params })
                                                 train_protonet(preprocessed_config)
 
-                                                preprocessed_config['data.episodes'] = 1000
+                                                preprocessed_config = {
+                                                    **preprocessed_config,
+                                                    'data.crop': False,
+                                                    'data.use_cropped': False,
+                                                    'data.episodes': 1000,
+                                                }
 
                                                 losses = []
                                                 accuracies = []
