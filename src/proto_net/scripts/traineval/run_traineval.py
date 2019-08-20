@@ -95,7 +95,7 @@ if not os.path.exists(eval_summary_file):
     file.write("datetime, model, config, min_loss, min_loss_accuracy\n")
     file.close()
 
-for dataset in ['ciarp', 'lsa16', 'rwth']:
+for dataset in ['rwth', 'lsa16', 'ciarp']:
     config_from_file = configparser.ConfigParser()
     config_from_file.read("./src/proto_net/config/config_{}.conf".format(dataset))
 
@@ -132,6 +132,10 @@ for dataset in ['ciarp', 'lsa16', 'rwth']:
                                                     'model.nb_filters': nb_filters,
 
                                                     'train.lr': lr,
+                                                    'data.crop': True,
+                                                    'data.use_cropped': True,
+                                                    'train.epochs': 1,
+                                                    'data.x_dim': '64,64,3',
                                                 }
 
                                                 now = datetime.now()

@@ -5,6 +5,7 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 import handshape_datasets as hd
+from src.hand_cropper.cropper import Cropper
 from src.utils.model_selection import train_test_split_balanced
 
 class DataLoader(object):
@@ -47,18 +48,17 @@ def load_rwth(data_dir, config, splits):
     DATASET_PATH = "/develop/data/rwth/data"
 
     data = hd.load(DATASET_NAME, DATASET_PATH)
-
     features = data[0]
     classes = data[1]['y']
 
     good_min = 20
     good_classes = []
-    
+
     for i in range(len(classes)):
         images = features[np.equal(i, classes)]
         if len(images) >= good_min:
             good_classes = good_classes + [i]
-            
+
     good_x = features[np.in1d(classes, good_classes)]
     good_y = classes[np.in1d(classes, good_classes)]
     my_dict = dict(zip(np.unique(good_y), range(len(np.unique(good_y)))))
@@ -72,6 +72,13 @@ def load_rwth(data_dir, config, splits):
                                                                  classes,
                                                                  train_size=config['data.train_size'],
                                                                  test_size=config['data.test_size'])
+
+    if config['data.crop']:
+        print('cropping')
+        cropper = Cropper(confidence=0.9, model_dir="src/handcropper/models/saved_model.pb")
+        x_train, y_train = cropper.crop_dataset(x_train, y_train, size=(64, 64), use_cropped=config['data.use_cropped'], good_min=good_min)
+        print('dataset cropped')
+
     x_train, x_test = x_train / 255.0, x_test / 255.0
 
     _, amountPerTrain = np.unique(y_train, return_counts=True)
@@ -136,7 +143,7 @@ def load_rwth(data_dir, config, splits):
         for index in i:
             x[index, :, :, :] = dg.apply_transform(x[index], dg_args)
 
-        data = np.reshape(x, (len(uniqueClasses), amountPerClass[0], 132, 92, 3))
+        data = np.reshape(x, (len(uniqueClasses), amountPerClass[0], w, h, c))
 
         data_loader = DataLoader(data,
                                  n_classes=len(uniqueClasses),

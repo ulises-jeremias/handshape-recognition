@@ -26,6 +26,31 @@ class Cropper:
         num_detections = graph.get_tensor_by_name('num_detections:0')
         self.outputs = [detection_boxes, detection_scores, detection_classes, num_detections]
 
+    def crop_dataset(self, x, y, size=(64, 64), dataset_name=None, use_cropped=False, good_min=15):
+        """crop the images. Using the name parameter you can access the cached data for that name"""
+        cropped_imgs, indexes = self.crop_images([np.expand_dims(i, axis=0) for i in x], size=size, name=dataset_name)
+        cropped_imgs = np.array(cropped_imgs)
+        cropped_y = y[indexes]
+        good_min = good_min
+        good_classes = []
+        # get cropped images with images per class >= good_min
+        for unique in np.unique(cropped_y):
+            if len(cropped_imgs[np.equal(unique,cropped_y)]) >= good_min:
+                good_classes = good_classes + [unique]
+        if use_cropped:
+            # get the cropped images and classes of the previously calculated "good classes"
+            x = cropped_imgs[np.in1d(cropped_y, good_classes)]
+            y = cropped_y[np.in1d(cropped_y, good_classes)]
+        else:
+            # get the full images and classes of the previously calculated "good classes"
+            x = np.array(x)[np.in1d(y, good_classes)]
+            y = y[np.in1d(y, good_classes)]
+        # change class names to fit range(len(np.unique(y))) so it can be used in the loss calculation
+        my_dict = dict(zip(np.unique(y), range(len(np.unique(y)))))
+        y = np.vectorize(my_dict.get)(y)
+
+        return x, y
+
     def crop_images(self, images, size=(64, 64), return_index=True, name=None):
         """
             Crops images

@@ -58,7 +58,7 @@ class DenseNetTrainer:
               nb_layers = [6,12], reduction = 0.0, lr = 0.001, epochs = 400,
               max_patience = 25, batch_size= 16, weight_classes = False,
               random_split = False, train_size=None, test_size=None,
-              crop = False, use_cropped = True):
+              crop = False, use_cropped = True, good_min=15):
         
         save_directory = self.general_directory + "{}/dense-net/".format(dataset_name)
         date = datetime.now().strftime("%Y_%m_%d-%H:%M:%S")
@@ -74,28 +74,8 @@ class DenseNetTrainer:
             # if cropper class is already created use it, otherwise create it
             if self.cropper is None:
                 self.cropper = Cropper(confidence = 0.9, model_dir="src/handcropper/models/saved_model.pb")
-            # crop the images. Using the name parameter you can access the cached data for that name
-            cropped_imgs, indexes = self.cropper.crop_images([np.expand_dims(i, axis=0) for i in x], (64,64), name = dataset_name)
-            print("cropped")
-            cropped_imgs = np.array(cropped_imgs)
-            cropped_y = y[indexes]
-            good_min = 15
-            good_classes = []
-            # get cropped images with images per class >= good_min
-            for unique in np.unique(cropped_y):
-                if len(cropped_imgs[np.equal(unique,cropped_y)]) >= good_min:
-                    good_classes = good_classes + [unique]
-            if use_cropped:
-                # get the cropped images and classes of the previously calculated "good classes"
-                x = cropped_imgs[np.in1d(cropped_y, good_classes)]
-                y = cropped_y[np.in1d(cropped_y, good_classes)]
-            else:
-                # get the full images and classes of the previously calculated "good classes"
-                x = np.array(x)[np.in1d(y, good_classes)]
-                y = y[np.in1d(y, good_classes)]
-            # change class names to fit range(len(np.unique(y))) so it can be used in the loss calculation
-            my_dict = dict(zip(np.unique(y), range(len(np.unique(y)))))
-            y = np.vectorize(my_dict.get)(y)
+            x, y = self.cropper.crop_dataset(x, y, size=(64, 64), dataset_name=dataset_name, use_cropped=use_cropped, good_min=good_min)
+            print('dataset cropped')
         
         image_shape = np.shape(x)[1:]
 
@@ -329,7 +309,7 @@ def train_densenet(dataset_name = "rwth", rotation_range = 10, width_shift_range
           height_shift_range = 0.10, horizontal_flip = True, growth_rate = 128,
           nb_layers = [6,12], reduction = 0.0, lr = 0.001, epochs = 400,
           max_patience = 25, batch_size= 16, checkpoints = False, weight_classes = False,
-          train_size=None, test_size=None, crop = False, use_cropped = True):
+          train_size=None, test_size=None, crop = False, use_cropped = True, good_min=15):
 
     # log
     log_freq = 1
@@ -367,23 +347,8 @@ def train_densenet(dataset_name = "rwth", rotation_range = 10, width_shift_range
     if crop:
         print("cropping")
         cropper = Cropper(confidence = 0.9, model_dir="src/handcropper/models/saved_model.pb")
-        cropped_imgs, indexes = cropper.crop_images([np.expand_dims(i, axis=0) for i in x], (64,64))
-        print("cropped")
-        cropped_imgs = np.array(cropped_imgs)
-        cropped_y = y[indexes]
-        good_min = 15
-        good_classes = []
-        for unique in np.unique(cropped_y):
-            if len(cropped_imgs[np.equal(unique,cropped_y)]) >= good_min:
-                good_classes = good_classes + [unique]
-        if use_cropped:
-            x = cropped_imgs[np.in1d(cropped_y, good_classes)]
-            y = cropped_y[np.in1d(cropped_y, good_classes)]
-        else:
-            x = np.array(x)[np.in1d(y, good_classes)]
-            y = y[np.in1d(y, good_classes)]
-        my_dict = dict(zip(np.unique(y), range(len(np.unique(y)))))
-        y = np.vectorize(my_dict.get)(y)
+        x, y = cropper.crop_dataset(x, y, size=(64, 64), use_cropped=use_cropped, good_min=good_min)
+        print('dataset cropped')
     
     image_shape = np.shape(x)[1:]
 
