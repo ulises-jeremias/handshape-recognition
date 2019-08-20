@@ -73,7 +73,7 @@ class DenseNetTrainer:
             print("cropping")
             # if cropper class is already created use it, otherwise create it
             if self.cropper is None:
-                self.cropper = Cropper(confidence = 0.9, model_dir="src/handcropper/models/saved_model.pb")
+                self.cropper = Cropper(confidence = 0.9, model_dir="src/hand_cropper/models/saved_model.pb")
             x, y = self.cropper.crop_dataset(x, y, size=(64, 64), dataset_name=dataset_name, use_cropped=use_cropped, good_min=good_min)
             print('dataset cropped')
         
@@ -346,7 +346,7 @@ def train_densenet(dataset_name = "rwth", rotation_range = 10, width_shift_range
 
     if crop:
         print("cropping")
-        cropper = Cropper(confidence = 0.9, model_dir="src/handcropper/models/saved_model.pb")
+        cropper = Cropper(confidence = 0.9, model_dir="src/hand_cropper/models/saved_model.pb")
         x, y = cropper.crop_dataset(x, y, size=(64, 64), use_cropped=use_cropped, good_min=good_min)
         print('dataset cropped')
     

@@ -66,18 +66,19 @@ def load_rwth(data_dir, config, splits):
 
     features, classes = good_x, good_y
 
+    if config['data.crop']:
+        print('cropping')
+        cropper = Cropper(confidence=0.9, model_dir="src/hand_cropper/models/saved_model.pb")
+        print('Cropper created')
+        features, classes = cropper.crop_dataset(features, classes, size=(64, 64), use_cropped=config['data.use_cropped'], good_min=good_min)
+        print('dataset cropped')
+
     uniqueClasses = np.unique(classes)
 
     x_train, x_test, y_train, y_test = train_test_split_balanced(features,
                                                                  classes,
                                                                  train_size=config['data.train_size'],
                                                                  test_size=config['data.test_size'])
-
-    if config['data.crop']:
-        print('cropping')
-        cropper = Cropper(confidence=0.9, model_dir="src/handcropper/models/saved_model.pb")
-        x_train, y_train = cropper.crop_dataset(x_train, y_train, size=(64, 64), use_cropped=config['data.use_cropped'], good_min=good_min)
-        print('dataset cropped')
 
     x_train, x_test = x_train / 255.0, x_test / 255.0
 

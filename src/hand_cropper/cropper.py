@@ -29,6 +29,7 @@ class Cropper:
     def crop_dataset(self, x, y, size=(64, 64), dataset_name=None, use_cropped=False, good_min=15):
         """crop the images. Using the name parameter you can access the cached data for that name"""
         cropped_imgs, indexes = self.crop_images([np.expand_dims(i, axis=0) for i in x], size=size, name=dataset_name)
+        print('images cropped')
         cropped_imgs = np.array(cropped_imgs)
         cropped_y = y[indexes]
         good_min = good_min
@@ -70,9 +71,10 @@ class Cropper:
         all_num = []
         with session.Session(graph=self.graph) as sess:
             predict = tf.keras.backend.function(inputs=self.inputs, outputs=self.outputs)
-            for i in enumerate(images):
+            for i in range(len(images)):
                 (boxes, scores, classes, num) = predict(images[i])
-                boxes, scores = np.squeeze(boxes), np.squeeze(scores)
+                boxes = np.squeeze(boxes)
+                scores = np.squeeze(scores)
                 all_boxes = all_boxes + [boxes.tolist()]
                 all_scores = all_scores + [scores.tolist()]
                 all_classes = all_classes + [classes.tolist()]
@@ -80,7 +82,7 @@ class Cropper:
         new_images = []
         if return_index:
             new_indexes = []
-        for i in enumerate(all_scores):
+        for i in range(len(all_scores)):
             score = np.squeeze(all_scores[i])
             max_i = score.argmax()
             if score[max_i] > self.confidence:

@@ -135,7 +135,7 @@ for dataset in ['rwth', 'lsa16', 'ciarp']:
                                                     'data.crop': True,
                                                     'data.use_cropped': True,
                                                     'train.epochs': 1,
-                                                    'data.x_dim': '64,64,3',
+                                                    'model.x_dim': '64,64,3',
                                                 }
 
                                                 now = datetime.now()

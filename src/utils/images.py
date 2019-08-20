@@ -17,7 +17,7 @@ def resize(img, size):
     """Resizes a given image"""
 
     new_width, new_height = size
-    height, width = img.shape
+    height, width, channels = img.shape
     ratio = min(new_width/width, new_height/height)
     new_x = int(width * ratio)
     new_y = int(height * ratio)
