@@ -19,6 +19,8 @@ RUN apt-get install -y git nano
 RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN pip install --upgrade pip
+
 RUN python3 --version
 
 # Clone and install handshape datasets
@@ -36,7 +38,7 @@ RUN pip3 install densenet
 RUN pip3 install -e /develop/
 
 RUN pip3 install sklearn opencv-python IPython
-RUN if [[ "$DOCKER_ENV" = "gpu" ]]; then echo -e "\e[1;31mINSTALLING GPU SUPPORT\e[0;33m"; pip3 install -U tf-nightly-gpu-2.0-preview tb-nightly; fi
+RUN if [[ "$DOCKER_ENV" = "gpu" ]]; then echo -e "\e[1;31mINSTALLING GPU SUPPORT\e[0;33m"; pip3 install -U tf-nightly-gpu-2.0-preview tb-nightly tensorflow-gpu==2.0.0-beta1; fi
 
 # Default dir for handshape datasets lib - use /data instead
 RUN mkdir -p /.handshape_datasets
