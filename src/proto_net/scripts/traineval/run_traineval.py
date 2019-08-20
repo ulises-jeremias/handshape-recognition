@@ -13,7 +13,8 @@ configs = {
         'data.test_way': [5],
         # done (1, 1, 1, 1) in previous experiments
         'data.support_query': [(5, 5, 5, 5)],
-        'data.train_size': [0.33, 0.5, 0.64, 0.75],
+        # 'data.train_size': [0.33, 0.5, 0.64, 0.75],
+        'data.train_size': [0.75],
         'data.test_size': [0.25],
 
         #'data.rotation_range': [0, 25], 
@@ -33,7 +34,8 @@ configs = {
         'data.test_way': [5],
         # done (1, 1, 1, 1) in previous experiments
         'data.support_query': [(5, 5, 5, 5)],
-        'data.train_size': [0.33, 0.5, 0.64, 0.75],
+        #'data.train_size': [0.33, 0.5, 0.64, 0.75],
+        'data.train_size': [0.75],
         'data.test_size': [0.25],
 
         #'data.rotation_range': [0, 25], 
@@ -52,7 +54,8 @@ configs = {
         'data.train_way': [20],
         'data.test_way': [5],
         'data.support_query': [(5, 5, 5, 5)],
-        'data.train_size': [0.33, 0.5, 0.64, 0.75],
+        # 'data.train_size': [0.33, 0.5, 0.64, 0.75],
+        'data.train_size': [0.75],
         'data.test_size': [0.25],
         
         #'data.rotation_range': [0, 25], 
@@ -95,7 +98,7 @@ if not os.path.exists(eval_summary_file):
     file.write("datetime, model, config, min_loss, min_loss_accuracy\n")
     file.close()
 
-for dataset in ['rwth', 'lsa16', 'ciarp']:
+for dataset in ['rwth']:
     config_from_file = configparser.ConfigParser()
     config_from_file.read("./src/proto_net/config/config_{}.conf".format(dataset))
 
